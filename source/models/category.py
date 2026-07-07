@@ -15,6 +15,7 @@ class CategoryOrm(Base):
         DateTime(timezone=True), 
         server_default=func.now()
         )
+    
     __table_args__ = (
         UniqueConstraint(
         "user_id", 
