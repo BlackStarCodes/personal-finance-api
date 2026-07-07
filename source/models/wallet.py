@@ -13,4 +13,4 @@ class WalletOrm(Base):
     type: Mapped[str] = mapped_column(String(30))
     currency: Mapped[str] = mapped_column(String(3))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    __table_args__ = (UniqueConstraint("user_id", "name", name="uniq_wallet_name_per_user",))
+    __table_args__ = (UniqueConstraint("user_id", "name", name="uniq_wallet_name_per_user",),)
