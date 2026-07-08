@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, func, DateTime
 from ..database import Base
 from datetime import datetime
@@ -14,3 +14,5 @@ class UserOrm(Base):
     email: Mapped[str] = mapped_column(String(60), unique=True)
     hashed_password: Mapped[str] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),server_default=func.now())
+    wallets: Mapped[list["WalletOrm"]] = relationship(back_populates="user")
+    categories: Mapped[list["CategoryOrm"]] = relationship(back_populates="user")

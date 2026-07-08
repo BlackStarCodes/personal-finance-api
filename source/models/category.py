@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, func, DateTime, ForeignKey, UniqueConstraint
 from ..database import Base
 from datetime import datetime
@@ -15,6 +15,8 @@ class CategoryOrm(Base):
         DateTime(timezone=True), 
         server_default=func.now()
         )
+    user: Mapped["UserOrm"] = relationship(back_populates="categories")
+    transactions: Mapped[list["TransactionOrm"]] = relationship(back_populates="category")
     
     __table_args__ = (
         UniqueConstraint(
