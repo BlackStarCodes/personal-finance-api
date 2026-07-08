@@ -8,7 +8,7 @@ from sqlalchemy import select
 router = APIRouter()
 
 
-@router.post('/users', response_model= UserOut)
+@router.post('/', response_model= UserOut)
 async def create_user(user:UserRegister, session: session_dependency):
     if session.scalar(select(UserOrm).where(UserOrm.username == user.username)):
         raise HTTPException(status_code=409, detail="Username taken!")
