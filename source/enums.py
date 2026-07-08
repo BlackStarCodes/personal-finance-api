@@ -1,0 +1,37 @@
+from enum import Enum
+
+class WalletType(str, Enum):
+    CASH = 'cash'
+    BANK = 'bank'
+    CREDIT_CARD = 'credit_card'
+    CRYPTO = 'crypto_currency'
+    INVESTMENT = 'investment'
+    OTHER = 'other'
+    EMERGENCY_FUND = 'emergency_funds'
+
+
+class CategoryType(str, Enum):
+    INCOME = 'income'
+    EXPENSE = 'expense'
+    SAVINGS = 'savings'
+    EMERGENCY_FUND = 'emergency_fund'
+    INVESTMENT = 'investment'
+    TRANSFER = 'transfer'
+
+
+class TransactionStatus(str, Enum):
+    PENDING = 'pending'
+    COMPLETED = 'completed'
+    CANCELLED = 'cancelled'
+    FAILED = 'failed'
+
+
+class TransactionMedium(str, Enum):
+    CASH = 'cash'
+    UPI = 'upi'
+    DEBIT_CARD = 'debit_card'
+    CREDIT_CARD = 'credit_card'
+    NET_BANKING ='net_banking'
+    APP = 'app'
+    GIFT_CARD = 'gift_card'
+

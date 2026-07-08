@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, func, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import String, func, DateTime, ForeignKey, UniqueConstraint, Boolean, Enum, text
 from ..database import Base
+from ..enums import CategoryType
 from datetime import datetime
 
 
@@ -10,11 +11,12 @@ class CategoryOrm(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('registered_users.id'))
     name: Mapped[str] = mapped_column(String(50))
-    type: Mapped[str] = mapped_column(String(30))
+    type: Mapped[CategoryType] = mapped_column(Enum(CategoryType))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 
         server_default=func.now()
         )
+    is_default: Mapped[bool] = mapped_column(Boolean, server_default= text("false"))
     user: Mapped["UserOrm"] = relationship(back_populates="categories")
     transactions: Mapped[list["TransactionOrm"]] = relationship(back_populates="category")
     
