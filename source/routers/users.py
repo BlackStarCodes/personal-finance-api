@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from ..schemas import UserRegister, UserOut, UserCreate
+from ..schemas import UserRegister, UserOut, UserUpdate
 from ..models.user import UserOrm
 from ..dependencies import session_dependency
 from ..security import pwd_hashed, get_current_user
@@ -31,3 +31,28 @@ async def create_user(user:UserRegister, session: session_dependency):
 @router.get('/me', response_model=UserOut)
 async def read_current_user(user: Annotated[UserOrm, Depends(get_current_user)]):
     return user
+
+
+@router.put('/me', response_model=UserOut)
+async def update_user(
+    updated_user: UserUpdate,
+    user: Annotated[UserOrm, Depends(get_current_user)],
+    session: session_dependency):
+    
+    existing = session.scalar(select(UserOrm).where(UserOrm.username == updated_user.username))
+    if existing and existing.id != user.id:
+        raise HTTPException(status_code=409, detail= "Username taken!")
+    
+    existing_email = session.scalar(select(UserOrm).where(UserOrm.email == updated_user.email))
+    if existing_email and existing_email.id != user.id:
+        raise HTTPException(status_code=409, detail= "Email already in use!")
+    
+    user.username = updated_user.username
+    user.email = updated_user.email
+    user.fullname = updated_user.fullname
+    user.hashed_password = pwd_hashed(updated_user.password)
+
+    session.commit()
+    session.refresh(user)
+    return user
+
