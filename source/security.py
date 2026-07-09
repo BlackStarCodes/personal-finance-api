@@ -68,3 +68,6 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: ses
     if not user:
         raise credentials_exception
     return user
+
+
+current_user = Annotated[UserOrm, Depends(get_current_user)]

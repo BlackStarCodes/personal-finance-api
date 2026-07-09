@@ -49,4 +49,4 @@ class WalletOut(WalletCreate):
 
 
 class WalletUpdate(WalletCreate):
-    pass 
+    pass

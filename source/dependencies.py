@@ -7,4 +7,6 @@ from .database import get_session
 
 session_dependency = Annotated[Session, Depends(get_session)]
 
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/login')
+

@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from ..schemas import UserRegister, UserOut, UserUpdate, UserDelete
 from ..models.user import UserOrm
 from ..dependencies import session_dependency
-from ..security import pwd_hashed, get_current_user, verify_pwd
+from ..security import pwd_hashed, get_current_user, verify_pwd, current_user
 from sqlalchemy import select
 from typing import Annotated    
 from datetime import datetime, timezone
@@ -29,14 +29,14 @@ async def create_user(user:UserRegister, session: session_dependency):
 
 
 @router.get('/me', response_model=UserOut)
-async def read_current_user(user: Annotated[UserOrm, Depends(get_current_user)]):
+async def read_current_user(user: current_user):
     return user
 
 
 @router.put('/me', response_model=UserOut)
 async def update_user(
     updated_user: UserUpdate,
-    user: Annotated[UserOrm, Depends(get_current_user)],
+    user: current_user,
     session: session_dependency):
     
     existing = session.scalar(select(UserOrm).where(UserOrm.username == updated_user.username))
@@ -59,7 +59,7 @@ async def update_user(
 
 @router.delete('/me')
 async def delete_user(
-    user: Annotated[UserOrm, Depends(get_current_user)],
+    user: current_user,
     user_confirm: UserDelete,
     session: session_dependency):
     if not verify_pwd(user_confirm.password, user.hashed_password):
