@@ -18,11 +18,11 @@ async def create_wallet(
     user: current_user,
     wallet: WalletCreate,
     session: session_dependency,):
-    wallet_name = wallet.name.strip().lower()
+    wallet_name = wallet.name.strip()
 
     existing_wallet = session.scalar(select(WalletOrm).where(
-        WalletOrm.user_id == user.id,
-        func.lower(WalletOrm.name) == wallet_name
+        WalletOrm.user_id == user.id, 
+        func.lower(WalletOrm.name) == wallet_name.lower()
     ))
     if existing_wallet:
         raise HTTPException(status_code=409, detail="Wallet name already exists!")
@@ -72,11 +72,11 @@ async def update_wallet(
     if not db_wallet:
         raise HTTPException(status_code=401, detail="Not allowed to modify this Wallet!")
     
-    wallet_name = wallet.name.strip().lower()
+    wallet_name = wallet.name.strip()
     
     existing_wallet = session.scalar(select(WalletOrm).where(
         WalletOrm.user_id == user.id,
-        func.lower(WalletOrm.name) == wallet_name))
+        func.lower(WalletOrm.name) == wallet_name.lower()))
     
     if existing_wallet and existing_wallet.id != wallet_id:
         raise HTTPException(status_code=409, detail="Wallet name already exists!")

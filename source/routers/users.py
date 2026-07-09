@@ -3,8 +3,7 @@ from ..schemas import UserRegister, UserOut, UserUpdate, UserDelete
 from ..models.user import UserOrm
 from ..dependencies import session_dependency
 from ..security import pwd_hashed, get_current_user, verify_pwd, current_user
-from sqlalchemy import select
-from typing import Annotated    
+from sqlalchemy import select, func
 from datetime import datetime, timezone
 
 router = APIRouter()
@@ -12,10 +11,17 @@ router = APIRouter()
 
 @router.post('/', response_model= UserOut)
 async def create_user(user:UserRegister, session: session_dependency):
-    if session.scalar(select(UserOrm).where(UserOrm.username == user.username)):
+    user.username = user.username.strip()
+    user.email = user.email.strip().lower()
+
+    if session.scalar(select(UserOrm).where(
+        func.lower(UserOrm.username) == user.username.lower())):
         raise HTTPException(status_code=409, detail="Username taken!")
-    if session.scalar(select(UserOrm).where(UserOrm.email == user.email)):
+    
+    if session.scalar(select(UserOrm).where(
+        func.lower(UserOrm.email) == user.email)):
         raise HTTPException(status_code=409, detail="Email already in use!")
+    
     new_user = UserOrm(
         username = user.username,
         fullname = user.fullname,
@@ -38,17 +44,24 @@ async def update_user(
     updated_user: UserUpdate,
     user: current_user,
     session: session_dependency):
+
+    updated_username = updated_user.username.strip()
+    updated_email = updated_user.email.strip().lower()
     
-    existing = session.scalar(select(UserOrm).where(UserOrm.username == updated_user.username))
+    existing = session.scalar(select(UserOrm).where(
+        func.lower(UserOrm.username) == updated_username.lower()))
+    
     if existing and existing.id != user.id:
         raise HTTPException(status_code=409, detail= "Username taken!")
     
-    existing_email = session.scalar(select(UserOrm).where(UserOrm.email == updated_user.email))
+    existing_email = session.scalar(select(UserOrm).where(
+        func.lower(UserOrm.email) == updated_email))
+    
     if existing_email and existing_email.id != user.id:
         raise HTTPException(status_code=409, detail= "Email already in use!")
     
-    user.username = updated_user.username
-    user.email = updated_user.email
+    user.username = updated_username
+    user.email = updated_email
     user.fullname = updated_user.fullname
     user.hashed_password = pwd_hashed(updated_user.password)
 
