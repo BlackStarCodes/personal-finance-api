@@ -37,3 +37,24 @@ async def create_wallet(
     session.commit()
     session.refresh(new_wallet)
     return new_wallet
+
+
+@router.get("/", response_model=list[WalletOut])
+async def read_wallets(
+    user: Annotated[UserOrm, Depends(get_current_user)],
+    session: session_dependency,):
+
+    wallets = session.scalars(select(WalletOrm).where(WalletOrm.user_id == user.id)).all()
+    return wallets
+
+
+@router.get("/{wallet_id}", response_model=WalletOut)
+async def read_wallet(
+    user: Annotated[UserOrm, Depends(get_current_user)],
+    wallet_id: int,
+    session: session_dependency
+):
+    wallet = session.scalar(select(WalletOrm).where(WalletOrm.id == wallet_id, WalletOrm.user_id == user.id))
+    if not wallet:
+        raise HTTPException(status_code=404, detail="Wallet Not Found!")
+    return wallet
