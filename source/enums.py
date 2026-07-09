@@ -4,7 +4,7 @@ class WalletType(str, Enum):
     CASH = 'cash'
     BANK = 'bank'
     CREDIT_CARD = 'credit_card'
-    CRYPTO = 'crypto_currency'
+    CRYPTO = 'crypto'
     INVESTMENT = 'investment'
     OTHER = 'other'
     EMERGENCY_FUND = 'emergency_funds'
