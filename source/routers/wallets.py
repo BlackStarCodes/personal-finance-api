@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException, Query, Depends, status
 from ..models.wallet import WalletOrm
-from ..models.user import UserOrm   
+from ..models.user import UserOrm
+from ..models.transaction import TransactionOrm   
 from ..schemas import WalletCreate, WalletOut, WalletUpdate
 from typing import Annotated
 from ..dependencies import session_dependency
 from ..security import get_current_user, current_user
-from sqlalchemy import select, func
+from sqlalchemy import select, func, exists, or_
 
 
 
@@ -92,3 +93,22 @@ async def update_wallet(
     session.refresh(db_wallet)
     return db_wallet
     
+
+@router.delete('/{wallet_id}')
+async def delete_wallet(user: current_user, wallet_id: int, session: session_dependency):
+    wallet = session.scalar(select(WalletOrm).where(WalletOrm.id == wallet_id, WalletOrm.user_id == user.id))
+    
+    if not wallet:
+        raise HTTPException(status_code=404, detail="Wallet not found")
+    
+    has_transactions = session.scalar(select(exists().where(or_(
+        TransactionOrm.from_wallet_id == wallet.id, 
+        TransactionOrm.to_wallet_id == wallet.id)
+        )))
+
+    if has_transactions:
+        raise HTTPException(status_code=409, detail="Wallet cannot be deleted since it contains transactions!")
+
+    session.delete(wallet)
+    session.commit()
+    return {"message":"Wallet deleted Successfully"}
