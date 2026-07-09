@@ -1,11 +1,9 @@
-from fastapi import APIRouter, HTTPException, Query, Depends, status
+from fastapi import APIRouter, HTTPException
 from ..models.wallet import WalletOrm
-from ..models.user import UserOrm
 from ..models.transaction import TransactionOrm   
 from ..schemas import WalletCreate, WalletOut, WalletUpdate
-from typing import Annotated
 from ..dependencies import session_dependency
-from ..security import get_current_user, current_user
+from ..security import current_user
 from sqlalchemy import select, func, exists, or_
 
 

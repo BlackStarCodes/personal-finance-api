@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from .enums import WalletType
+from .enums import WalletType, CategoryType
 from decimal import Decimal
 
 
@@ -50,3 +50,18 @@ class WalletOut(WalletCreate):
 
 class WalletUpdate(WalletCreate):
     pass
+
+
+class CategoryCreate(BaseModel):
+    name: str
+    type: CategoryType
+
+
+class CategoryOut(CategoryCreate):
+    id: int
+    model_config = {"from_attributes":True}
+    
+
+class CategoryUpdate(CategoryCreate):
+    pass
+    
