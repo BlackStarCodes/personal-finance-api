@@ -16,6 +16,8 @@ class CategoryOrm(Base):
         DateTime(timezone=True), 
         server_default=func.now()
         )
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default= func.now(), onupdate=func.now())
+
     is_default: Mapped[bool] = mapped_column(Boolean, server_default= text("false"))
     user: Mapped["UserOrm"] = relationship(back_populates="categories")
     transactions: Mapped[list["TransactionOrm"]] = relationship(back_populates="category")

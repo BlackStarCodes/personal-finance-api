@@ -15,6 +15,7 @@ class WalletOrm(Base):
     type: Mapped[WalletType] = mapped_column(Enum(WalletType))
     currency: Mapped[str] = mapped_column(String(3))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default= func.now(), onupdate=func.now())
     user: Mapped["UserOrm"] = relationship(back_populates="wallets")
     balance: Mapped[Decimal] = mapped_column(Numeric(12,2), server_default=text("0"))
     incoming_transactions: Mapped[list["TransactionOrm"]] = relationship(foreign_keys= '[TransactionOrm.to_wallet_id]', back_populates="to_wallet")
