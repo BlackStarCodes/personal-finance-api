@@ -29,3 +29,6 @@ class UserUpdate(UserCreate):
     password: str
 
     
+class UserDelete(BaseModel):
+    password: str
+    confirm: str

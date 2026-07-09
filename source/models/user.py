@@ -16,3 +16,6 @@ class UserOrm(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),server_default=func.now())
     wallets: Mapped[list["WalletOrm"]] = relationship(back_populates="user")
     categories: Mapped[list["CategoryOrm"]] = relationship(back_populates="user")
+    deleted_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )

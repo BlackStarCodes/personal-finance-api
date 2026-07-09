@@ -30,7 +30,7 @@ def authenticate_user(
         username: str, 
         password: str,
         ) -> UserOrm | bool:
-    user = session.scalar(select(UserOrm).where(UserOrm.username == username))
+    user = session.scalar(select(UserOrm).where(UserOrm.username == username, UserOrm.deleted_at.is_(None)))
     if not user:
         verify_pwd(password, mock)
         return False
@@ -64,7 +64,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: ses
         token_data = TokenData(id= user_id)
     except InvalidTokenError:
         raise credentials_exception
-    user = session.get(UserOrm, token_data.id)
+    user = session.scalar(select(UserOrm).where(UserOrm.id == token_data.id, UserOrm.deleted_at.is_(None)))
     if not user:
         raise credentials_exception
     return user

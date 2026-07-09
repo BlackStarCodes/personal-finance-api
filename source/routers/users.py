@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends
-from ..schemas import UserRegister, UserOut, UserUpdate
+from ..schemas import UserRegister, UserOut, UserUpdate, UserDelete
 from ..models.user import UserOrm
 from ..dependencies import session_dependency
-from ..security import pwd_hashed, get_current_user
+from ..security import pwd_hashed, get_current_user, verify_pwd
 from sqlalchemy import select
 from typing import Annotated    
-
+from datetime import datetime, timezone
 
 router = APIRouter()
 
@@ -55,4 +55,20 @@ async def update_user(
     session.commit()
     session.refresh(user)
     return user
+
+
+@router.delete('/me')
+async def delete_user(
+    user: Annotated[UserOrm, Depends(get_current_user)],
+    user_confirm: UserDelete,
+    session: session_dependency):
+    if not verify_pwd(user_confirm.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Password is incorrect!")
+    
+    if not user_confirm.confirm == "DELETE MY ACCOUNT":
+        raise HTTPException(status_code=400, detail= "Confirm message must be 'DELETE MY ACCOUNT'.")
+    user.deleted_at = datetime.now(timezone.utc)
+    session.commit()
+    return {"message": "Account deleted successfully"}
+    
 
