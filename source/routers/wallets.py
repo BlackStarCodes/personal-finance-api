@@ -68,7 +68,7 @@ async def update_wallet(
 ):
     db_wallet = session.scalar(select(WalletOrm).where(WalletOrm.id == wallet_id, WalletOrm.user_id == user.id))
     if not db_wallet:
-        raise HTTPException(status_code=401, detail="Not allowed to modify this Wallet!")
+        raise HTTPException(status_code=404, detail="Not found Wallet!")
     
     wallet_name = wallet.name.strip()
     
@@ -86,7 +86,6 @@ async def update_wallet(
     db_wallet.balance = wallet.balance
 
 
-    session.add(db_wallet)
     session.commit()
     session.refresh(db_wallet)
     return db_wallet

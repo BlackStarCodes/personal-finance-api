@@ -63,3 +63,33 @@ async def read_category(
     return category
 
 
+@router.put('/{category_id}', response_model=CategoryOut)
+async def update_category(
+    user: current_user,
+    category: CategoryUpdate,
+    category_id: int,
+    session: session_dependency
+): 
+    db_category = session.scalar(select(CategoryOrm).where(
+        CategoryOrm.id == category_id, 
+        CategoryOrm.user_id == user.id))
+    
+    if not db_category:
+        raise HTTPException(status_code=404, detail= "Category Not Found!")
+
+    category_name = category.name.strip()
+
+    existing_category = session.scalar(select(CategoryOrm).where(
+        CategoryOrm.user_id == user.id,
+        func.lower(CategoryOrm.name) == category_name.lower()
+    ))
+
+    if existing_category and existing_category.id != category_id:
+        raise HTTPException(status_code=409, detail="Category already exists!")
+    
+    db_category.name = category_name
+    db_category.type = category.type
+
+    session.commit()
+    session.refresh(db_category)
+    return db_category
