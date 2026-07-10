@@ -5,6 +5,7 @@ from ..dependencies import session_dependency
 from ..security import pwd_hashed, get_current_user, verify_pwd, current_user
 from sqlalchemy import select, func
 from datetime import datetime, timezone
+from ..services.category_service import seed_default_categories
 
 router = APIRouter()
 
@@ -31,6 +32,10 @@ async def create_user(user:UserRegister, session: session_dependency):
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
+
+    seed_default_categories(new_user.id, session)
+    session.commit()
+    
     return new_user
 
 
