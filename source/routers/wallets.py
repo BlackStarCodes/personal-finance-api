@@ -29,8 +29,9 @@ async def create_wallet(
         user_id = user.id,
         name = wallet_name,
         type = wallet.type,
-        currency = wallet.currency,
-        balance = wallet.balance
+        currency = wallet.currency.upper(),
+        balance = wallet.balance,
+        wallet_group = wallet.wallet_group,
     )
     session.add(new_wallet)
     session.commit()
@@ -82,8 +83,8 @@ async def update_wallet(
 
     db_wallet.name = wallet_name
     db_wallet.type = wallet.type
-    db_wallet.currency = wallet.currency
-    db_wallet.balance = wallet.balance
+    db_wallet.currency = wallet.currency.upper()
+    db_wallet.wallet_group = wallet.wallet_group
 
 
     session.commit()

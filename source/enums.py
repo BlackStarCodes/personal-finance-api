@@ -8,7 +8,6 @@ class WalletType(str, Enum):
     CRYPTO = 'crypto'
     INVESTMENT = 'investment'
     OTHER = 'other'
-    EMERGENCY_FUND = 'emergency_funds'
 
 
 class CategoryType(str, Enum):
@@ -36,3 +35,10 @@ class TransactionMedium(str, Enum):
     APP = 'app'
     GIFT_CARD = 'gift_card'
 
+
+class WalletGroup(str, Enum):
+    AVAILABLE = 'available'
+    SAVINGS = 'savings'
+    EMERGENCY_FUND = 'emergency_fund'
+    INVESTMENT = 'investment'
+    UNASSIGNED = 'unassigned'

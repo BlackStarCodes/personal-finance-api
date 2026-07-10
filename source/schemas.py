@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from .enums import WalletType, CategoryType, TransactionMedium, TransactionStatus
+from .enums import WalletType, CategoryType, TransactionMedium, TransactionStatus, WalletGroup
 from decimal import Decimal
 from datetime import datetime
 
@@ -42,6 +42,7 @@ class WalletCreate(BaseModel):
     type: WalletType
     currency: str = Field(min_length=3, max_length=3)
     balance: Decimal
+    wallet_group: WalletGroup = WalletGroup.AVAILABLE
 
 
 class WalletOut(WalletCreate):
@@ -69,7 +70,7 @@ class CategoryUpdate(CategoryCreate):
 
 class TransactionCreate(BaseModel):
     name: str
-    from_wallet_id: int
+    from_wallet_id: int | None = None
     to_wallet_id: int | None = None
     category_id: int
 
@@ -83,3 +84,11 @@ class TransactionCreate(BaseModel):
     is_recurring: bool = False
     receipt_url: str | None = None
     
+
+class TransactionOut(TransactionCreate):
+    id: int
+    model_config = {"from_attributes":True}
+
+
+class TransactionUpdate(TransactionCreate):
+    pass
