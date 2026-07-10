@@ -11,7 +11,8 @@ class CategoryOrm(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('registered_users.id'))
     name: Mapped[str] = mapped_column(String(50))
-    type: Mapped[CategoryType] = mapped_column(Enum(CategoryType))
+    type: Mapped[CategoryType] = mapped_column(Enum(CategoryType
+                                ,values_callable = lambda enum: [e.value for e in enum]))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 
         server_default=func.now()

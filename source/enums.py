@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class WalletType(str, Enum):
     CASH = 'cash'
     BANK = 'bank'

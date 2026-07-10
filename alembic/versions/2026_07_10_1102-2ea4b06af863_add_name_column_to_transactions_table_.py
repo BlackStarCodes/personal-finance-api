@@ -27,7 +27,7 @@ def upgrade() -> None:
             nullable=True)
     op.alter_column('transactions', 'status',
             existing_type=postgresql.ENUM('PENDING', 'COMPLETED', 'CANCELLED', 'FAILED', name='transactionstatus'),
-            server_default='COMPLETED',
+            server_default='completed',
             existing_nullable=False)
     op.alter_column('transactions', 'is_recurring',
             existing_type=sa.BOOLEAN(),

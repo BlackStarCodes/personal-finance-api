@@ -12,7 +12,8 @@ class WalletOrm(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('registered_users.id'))
     name: Mapped[str] = mapped_column(String(50))
-    type: Mapped[WalletType] = mapped_column(Enum(WalletType))
+    type: Mapped[WalletType] = mapped_column(Enum(WalletType,
+                                            values_callable = lambda enum: [e.value for e in enum]))
     currency: Mapped[str] = mapped_column(String(3))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default= func.now(), onupdate=func.now())
