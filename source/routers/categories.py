@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from ..models.category import CategoryOrm
+from ..models.transaction import TransactionOrm
 from ..dependencies import session_dependency
 from sqlalchemy import select, func, exists, or_
 from ..schemas import CategoryCreate, CategoryOut, CategoryUpdate
@@ -93,3 +94,25 @@ async def update_category(
     session.commit()
     session.refresh(db_category)
     return db_category
+
+
+@router.delete('/{category_id}')
+async def delete_category(
+    user: current_user,
+    session: session_dependency,
+    category_id: int
+):
+    category = session.scalar(select(CategoryOrm).where(CategoryOrm.user_id == user.id, CategoryOrm.id == category_id))
+
+    if not category:
+        raise HTTPException(status_code=404, detail="Category Not Found")
+    
+    has_transactions = session.scalar(select(exists().where(
+        TransactionOrm.category_id == category.id)))
+    
+    if has_transactions:
+        raise HTTPException(status_code=409, detail="Category cannot be deleted since it contains transactions!")
+    
+    session.delete(category)
+    session.commit()
+    return {'message':'Category deleted Successfully'}
