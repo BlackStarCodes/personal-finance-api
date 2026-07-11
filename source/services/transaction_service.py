@@ -1,13 +1,21 @@
 from ..models.wallet import WalletOrm
 from ..models.category import CategoryOrm
+from ..models.transaction import TransactionOrm
 from fastapi import HTTPException
 from ..enums import CategoryType
+from sqlalchemy import select
 
 
 def validate_wallets(user_id, to_wallet_id : int | None, from_wallet_id: int | None, session):
     to_wallet = session.scalar(select(WalletOrm).where(WalletOrm.id == to_wallet_id, WalletOrm.user_id == user_id))
     from_wallet = session.scalar(select(WalletOrm).where(WalletOrm.id == from_wallet_id, WalletOrm.user_id == user_id))
 
+    if from_wallet_id is not None and from_wallet is None:
+            raise HTTPException(404,detail= "Source wallet not found.")
+
+    if to_wallet_id is not None and to_wallet is None:
+        raise HTTPException(404,detail= "Destination wallet not found.")
+    
     if (
     to_wallet_id is not None
     and from_wallet_id is not None
@@ -70,3 +78,15 @@ def apply_balance_changes(amount, from_wallet: WalletOrm | None, to_wallet: Wall
         to_wallet.balance += amount
     
 
+def reverse_balance_changes(amount, from_wallet: WalletOrm | None, to_wallet: WalletOrm | None, category):
+    if category.type == CategoryType.INCOME:
+        to_wallet.balance -= amount
+        
+        
+    elif category.type == CategoryType.EXPENSE:
+        from_wallet.balance += amount
+        
+
+    else:
+        from_wallet.balance += amount
+        to_wallet.balance -= amount
