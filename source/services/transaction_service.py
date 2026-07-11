@@ -3,7 +3,7 @@ from ..models.category import CategoryOrm
 from ..models.transaction import TransactionOrm
 from fastapi import HTTPException
 from ..enums import CategoryType
-from sqlalchemy import select
+from sqlalchemy import select, or_
 
 
 def validate_wallets(user_id, to_wallet_id : int | None, from_wallet_id: int | None, session):
@@ -90,3 +90,12 @@ def reverse_balance_changes(amount, from_wallet: WalletOrm | None, to_wallet: Wa
     else:
         from_wallet.balance += amount
         to_wallet.balance -= amount
+
+
+def get_user_transaction(transaction_id, user_id, session):
+    transaction = session.scalar(select(TransactionOrm).where(TransactionOrm.id == transaction_id
+                    , or_(TransactionOrm.from_wallet.has(WalletOrm.user_id == user_id),
+                          TransactionOrm.to_wallet.has(WalletOrm.user_id == user_id)
+                          )
+                          ))
+    return transaction

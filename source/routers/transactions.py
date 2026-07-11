@@ -3,10 +3,10 @@ from ..models.transaction import TransactionOrm
 from ..models.category import CategoryOrm
 from ..models.wallet import WalletOrm
 from ..dependencies import session_dependency
-from sqlalchemy import select, func, exists, or_
+from sqlalchemy import select, func, exists, or_, and_
 from ..schemas import TransactionCreate, TransactionOut, TransactionUpdate
 from ..security import current_user
-from ..services.transaction_service import validate_wallets, validate_category, validate_category_types,check_sufficient_balance, apply_balance_changes, reverse_balance_changes
+from ..services.transaction_service import validate_wallets, validate_category, validate_category_types,check_sufficient_balance, apply_balance_changes, reverse_balance_changes, get_user_transaction
 
 
 router = APIRouter()
@@ -52,3 +52,32 @@ async def create_transaction(
 
     return new_transaction
     
+
+@router.get('/', response_model=list[TransactionOut])
+async def read_transactions(
+    user: current_user,
+    session: session_dependency
+):
+    transactions = session.scalars(select(TransactionOrm).where(or_
+        (
+        TransactionOrm.from_wallet.has(WalletOrm.user_id == user.id),
+        TransactionOrm.to_wallet.has(WalletOrm.user_id == user.id)
+        )
+        ).order_by(TransactionOrm.transaction_date.desc())
+        ).all()
+
+    return transactions
+
+
+@router.get('/{transaction_id}', response_model=TransactionOut)
+async def read_transaction(
+    user: current_user,
+    session: session_dependency,
+    transaction_id: int,
+):
+    transaction = get_user_transaction(transaction_id=transaction_id, user_id=user.id, session=session)
+    
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction Not Found!")
+    
+    return transaction 
