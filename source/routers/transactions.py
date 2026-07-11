@@ -81,3 +81,46 @@ async def read_transaction(
         raise HTTPException(status_code=404, detail="Transaction Not Found!")
     
     return transaction 
+
+
+@router.put('/{transaction_id}', response_model=TransactionOut)
+async def update_transaction(
+    user: current_user,
+    transaction_id: int,
+    transaction: TransactionUpdate,
+    session: session_dependency
+):
+    db_transaction = get_user_transaction(transaction_id, user.id, session)
+
+    try: 
+        reverse_balance_changes(db_transaction.amount, db_transaction.from_wallet, db_transaction.to_wallet, db_transaction.category)
+
+        to_wallet, from_wallet = validate_wallets(user_id=user.id, to_wallet_id=transaction.to_wallet_id, from_wallet_id=transaction.from_wallet_id, session=session)
+        category = validate_category(user.id, transaction.category_id, session)
+        validate_category_types(from_wallet=from_wallet, to_wallet=to_wallet, category=category)
+        check_sufficient_balance(transaction.amount, from_wallet, category)
+        apply_balance_changes(transaction.amount, from_wallet, to_wallet, category)
+
+        db_transaction.name = transaction.name
+        db_transaction.from_wallet_id= transaction.from_wallet_id
+        db_transaction.to_wallet_id= transaction.to_wallet_id
+        db_transaction.category_id= transaction.category_id
+
+        db_transaction.amount= transaction.amount
+        db_transaction.transaction_date = transaction.transaction_date
+        db_transaction.description = transaction.description
+        db_transaction.merchant = transaction.merchant
+
+        db_transaction.transaction_medium = transaction.transaction_medium
+        db_transaction.status = transaction.status
+        db_transaction.is_recurring = transaction.is_recurring
+        db_transaction.receipt_url = transaction.receipt_url
+            
+
+        session.commit()
+        session.refresh(db_transaction)
+    except Exception:
+        session.rollback()
+        raise
+
+    return db_transaction
