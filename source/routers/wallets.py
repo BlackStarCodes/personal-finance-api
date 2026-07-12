@@ -7,7 +7,6 @@ from ..security import current_user
 from sqlalchemy import select, func, exists, or_
 
 
-
 router = APIRouter()
 
 
@@ -18,24 +17,29 @@ async def create_wallet(
     session: session_dependency,):
     wallet_name = wallet.name.strip()
 
-    existing_wallet = session.scalar(select(WalletOrm).where(
-        WalletOrm.user_id == user.id, 
-        func.lower(WalletOrm.name) == wallet_name.lower()
-    ))
-    if existing_wallet:
-        raise HTTPException(status_code=409, detail="Wallet name already exists!")
+    try:
+        existing_wallet = session.scalar(select(WalletOrm).where(
+            WalletOrm.user_id == user.id, 
+            func.lower(WalletOrm.name) == wallet_name.lower()
+        ))
+        if existing_wallet:
+            raise HTTPException(status_code=409, detail="Wallet name already exists!")
+        
+        new_wallet = WalletOrm(
+            user_id = user.id,
+            name = wallet_name,
+            type = wallet.type,
+            currency = wallet.currency.upper(),
+            balance = wallet.balance,
+            wallet_group = wallet.wallet_group,
+        )
+        session.add(new_wallet)
+        session.commit()
+        session.refresh(new_wallet)
+    except Exception:
+        session.rollback()
+        raise
     
-    new_wallet = WalletOrm(
-        user_id = user.id,
-        name = wallet_name,
-        type = wallet.type,
-        currency = wallet.currency.upper(),
-        balance = wallet.balance,
-        wallet_group = wallet.wallet_group,
-    )
-    session.add(new_wallet)
-    session.commit()
-    session.refresh(new_wallet)
     return new_wallet
 
 
@@ -67,46 +71,57 @@ async def update_wallet(
     wallet: WalletUpdate,
     session: session_dependency
 ):
-    db_wallet = session.scalar(select(WalletOrm).where(WalletOrm.id == wallet_id, WalletOrm.user_id == user.id))
-    if not db_wallet:
-        raise HTTPException(status_code=404, detail="Not found Wallet!")
-    
-    wallet_name = wallet.name.strip()
-    
-    existing_wallet = session.scalar(select(WalletOrm).where(
-        WalletOrm.user_id == user.id,
-        func.lower(WalletOrm.name) == wallet_name.lower()))
-    
-    if existing_wallet and existing_wallet.id != wallet_id:
-        raise HTTPException(status_code=409, detail="Wallet name already exists!")
-    
+    try:
+        db_wallet = session.scalar(select(WalletOrm).where(WalletOrm.id == wallet_id, WalletOrm.user_id == user.id))
+        if not db_wallet:
+            raise HTTPException(status_code=404, detail="Not found Wallet!")
+        
+        wallet_name = wallet.name.strip()
+        
+        existing_wallet = session.scalar(select(WalletOrm).where(
+            WalletOrm.user_id == user.id,
+            func.lower(WalletOrm.name) == wallet_name.lower()))
+        
+        if existing_wallet and existing_wallet.id != wallet_id:
+            raise HTTPException(status_code=409, detail="Wallet name already exists!")
+        
 
-    db_wallet.name = wallet_name
-    db_wallet.type = wallet.type
-    db_wallet.currency = wallet.currency.upper()
-    db_wallet.wallet_group = wallet.wallet_group
+        db_wallet.name = wallet_name
+        db_wallet.type = wallet.type
+        db_wallet.currency = wallet.currency.upper()
+        db_wallet.wallet_group = wallet.wallet_group
 
 
-    session.commit()
-    session.refresh(db_wallet)
+        session.commit()
+        session.refresh(db_wallet)
+    except Exception:
+        session.rollback()
+        raise
+
     return db_wallet
     
 
 @router.delete('/{wallet_id}')
 async def delete_wallet(user: current_user, wallet_id: int, session: session_dependency):
-    wallet = session.scalar(select(WalletOrm).where(WalletOrm.id == wallet_id, WalletOrm.user_id == user.id))
-    
-    if not wallet:
-        raise HTTPException(status_code=404, detail="Wallet not found")
-    
-    has_transactions = session.scalar(select(exists().where(or_(
-        TransactionOrm.from_wallet_id == wallet.id, 
-        TransactionOrm.to_wallet_id == wallet.id)
-        )))
 
-    if has_transactions:
-        raise HTTPException(status_code=409, detail="Wallet cannot be deleted since it contains transactions!")
+    try:
+        wallet = session.scalar(select(WalletOrm).where(WalletOrm.id == wallet_id, WalletOrm.user_id == user.id))
+        
+        if not wallet:
+            raise HTTPException(status_code=404, detail="Wallet not found")
+        
+        has_transactions = session.scalar(select(exists().where(or_(
+            TransactionOrm.from_wallet_id == wallet.id, 
+            TransactionOrm.to_wallet_id == wallet.id)
+            )))
 
-    session.delete(wallet)
-    session.commit()
+        if has_transactions:
+            raise HTTPException(status_code=409, detail="Wallet cannot be deleted since it contains transactions!")
+
+        session.delete(wallet)
+        session.commit()
+
+    except Exception:
+        session.rollback()
+        raise
     return {"message":"Wallet deleted Successfully"}

@@ -18,21 +18,26 @@ async def create_category(
 ):
     category_name = category.name.strip()
 
-    existing_category = session.scalar(select(CategoryOrm).where(
-        CategoryOrm.user_id == user.id,
-        func.lower(CategoryOrm.name) == category_name.lower()
-    ))
-    if existing_category:
-        raise HTTPException(status_code=409, detail='This category already exists!')
-    
-    new_category = CategoryOrm(
-        user_id = user.id,
-        name = category_name,
-        type = category.type
-    )
-    session.add(new_category)
-    session.commit()
-    session.refresh(new_category)
+    try:
+        existing_category = session.scalar(select(CategoryOrm).where(
+            CategoryOrm.user_id == user.id,
+            func.lower(CategoryOrm.name) == category_name.lower()
+        ))
+        if existing_category:
+            raise HTTPException(status_code=409, detail='This category already exists!')
+        
+        new_category = CategoryOrm(
+            user_id = user.id,
+            name = category_name,
+            type = category.type
+        )
+        session.add(new_category)
+        session.commit()
+        session.refresh(new_category)
+        
+    except Exception:
+        session.rollback()
+        raise
     return new_category
 
 
@@ -71,28 +76,33 @@ async def update_category(
     category_id: int,
     session: session_dependency
 ): 
-    db_category = session.scalar(select(CategoryOrm).where(
-        CategoryOrm.id == category_id, 
-        CategoryOrm.user_id == user.id))
-    
-    if not db_category:
-        raise HTTPException(status_code=404, detail= "Category Not Found!")
+    try:
+        db_category = session.scalar(select(CategoryOrm).where(
+            CategoryOrm.id == category_id, 
+            CategoryOrm.user_id == user.id))
+        
+        if not db_category:
+            raise HTTPException(status_code=404, detail= "Category Not Found!")
 
-    category_name = category.name.strip()
+        category_name = category.name.strip()
 
-    existing_category = session.scalar(select(CategoryOrm).where(
-        CategoryOrm.user_id == user.id,
-        func.lower(CategoryOrm.name) == category_name.lower()
-    ))
+        existing_category = session.scalar(select(CategoryOrm).where(
+            CategoryOrm.user_id == user.id,
+            func.lower(CategoryOrm.name) == category_name.lower()
+        ))
 
-    if existing_category and existing_category.id != category_id:
-        raise HTTPException(status_code=409, detail="Category already exists!")
-    
-    db_category.name = category_name
-    db_category.type = category.type
+        if existing_category and existing_category.id != category_id:
+            raise HTTPException(status_code=409, detail="Category already exists!")
+        
+        db_category.name = category_name
+        db_category.type = category.type
 
-    session.commit()
-    session.refresh(db_category)
+        session.commit()
+        session.refresh(db_category)
+
+    except Exception:
+        session.rollback()
+        raise
     return db_category
 
 
@@ -102,17 +112,22 @@ async def delete_category(
     session: session_dependency,
     category_id: int
 ):
-    category = session.scalar(select(CategoryOrm).where(CategoryOrm.user_id == user.id, CategoryOrm.id == category_id))
+    try:
+        category = session.scalar(select(CategoryOrm).where(CategoryOrm.user_id == user.id, CategoryOrm.id == category_id))
 
-    if not category:
-        raise HTTPException(status_code=404, detail="Category Not Found")
-    
-    has_transactions = session.scalar(select(exists().where(
-        TransactionOrm.category_id == category.id)))
-    
-    if has_transactions:
-        raise HTTPException(status_code=409, detail="Category cannot be deleted since it contains transactions!")
-    
-    session.delete(category)
-    session.commit()
+        if not category:
+            raise HTTPException(status_code=404, detail="Category Not Found")
+        
+        has_transactions = session.scalar(select(exists().where(
+            TransactionOrm.category_id == category.id)))
+        
+        if has_transactions:
+            raise HTTPException(status_code=409, detail="Category cannot be deleted since it contains transactions!")
+        
+        session.delete(category)
+        session.commit()
+        
+    except Exception:
+        session.rollback()
+        raise
     return {'message':'Category deleted Successfully'}
