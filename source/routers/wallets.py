@@ -90,10 +90,11 @@ async def update_wallet(
         db_wallet.type = wallet.type
         db_wallet.currency = wallet.currency.upper()
         db_wallet.wallet_group = wallet.wallet_group
-
+        db_wallet.balance = wallet.balance
 
         session.commit()
         session.refresh(db_wallet)
+
     except Exception:
         session.rollback()
         raise

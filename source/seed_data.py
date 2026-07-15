@@ -46,5 +46,6 @@ DEFAULT_CATEGORIES = [
     {"name": "Interest Received", "type":CategoryType.INCOME},
     {"name": "Interest Paid", "type":CategoryType.EXPENSE},
     {"name": "Dividends", "type":CategoryType.INCOME},
+    {"name": "Emergency Fund", "type":CategoryType.EMERGENCY_FUND},
     ]
 
