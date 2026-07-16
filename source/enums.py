@@ -17,6 +17,7 @@ class CategoryType(str, Enum):
     EMERGENCY_FUND = 'emergency_fund'
     INVESTMENT = 'investment'
     TRANSFER = 'transfer'
+    DEBT = 'debt'
 
 
 class TransactionStatus(str, Enum):
@@ -42,3 +43,4 @@ class WalletGroup(str, Enum):
     EMERGENCY_FUND = 'emergency_fund'
     INVESTMENT = 'investment'
     UNASSIGNED = 'unassigned'
+    DEBT = 'debt'

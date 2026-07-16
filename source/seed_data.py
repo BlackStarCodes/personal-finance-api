@@ -1,4 +1,5 @@
-from .enums import CategoryType
+from .enums import CategoryType, WalletGroup, WalletType
+
 
 """
 class CategoryType(str, Enum):
@@ -47,5 +48,13 @@ DEFAULT_CATEGORIES = [
     {"name": "Interest Paid", "type":CategoryType.EXPENSE},
     {"name": "Dividends", "type":CategoryType.INCOME},
     {"name": "Emergency Fund", "type":CategoryType.EMERGENCY_FUND},
+    {"name": "Education Loan", "type":CategoryType.DEBT},
+    {"name": "Credit Card", "type":CategoryType.DEBT},
+    {"name": "Home Loan", "type":CategoryType.DEBT},
+    {"name": "Personal Loan", "type":CategoryType.DEBT},
+    {"name": "Personal Loan", "type":CategoryType.DEBT},
+    {"name": "Automobile Loan", "type":CategoryType.DEBT},
+    {"name": "Informal Loan", "type":CategoryType.DEBT},
     ]
+
 
