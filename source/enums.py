@@ -6,7 +6,7 @@ class WalletType(str, Enum):
     BANK = 'bank'
     CREDIT_CARD = 'credit_card'
     CRYPTO = 'crypto'
-    Brokerage = 'brokerage'
+    BROKERAGE = 'brokerage'
     OTHER = 'other'
 
 

@@ -2,6 +2,7 @@ from .enums import CategoryType, WalletGroup, WalletType
 
 
 """
+For reference:
 class CategoryType(str, Enum):
     INCOME = 'income'
     EXPENSE = 'expense'
@@ -9,6 +10,25 @@ class CategoryType(str, Enum):
     EMERGENCY_FUND = 'emergency_fund'
     INVESTMENT = 'investment'
     TRANSFER = 'transfer'
+    
+
+class WalletType(str, Enum):
+    CASH = 'cash'
+    BANK = 'bank'
+    CREDIT_CARD = 'credit_card'
+    CRYPTO = 'crypto'
+    Brokerage = 'brokerage'
+    OTHER = 'other'
+    
+
+class WalletGroup(str, Enum):
+    AVAILABLE = 'available'
+    SAVINGS = 'savings'
+    EMERGENCY_FUND = 'emergency_fund'
+    INVESTMENT = 'investment'
+    UNASSIGNED = 'unassigned'
+    DEBT = 'debt'
+    
     """
 
 
@@ -52,9 +72,16 @@ DEFAULT_CATEGORIES = [
     {"name": "Credit Card", "type":CategoryType.DEBT},
     {"name": "Home Loan", "type":CategoryType.DEBT},
     {"name": "Personal Loan", "type":CategoryType.DEBT},
-    {"name": "Personal Loan", "type":CategoryType.DEBT},
     {"name": "Automobile Loan", "type":CategoryType.DEBT},
     {"name": "Informal Loan", "type":CategoryType.DEBT},
     ]
 
 
+DEFAULT_WALLETS = [
+    {"name":"Available", "type":WalletType.BANK, "currency":"INR", "balance":0, "wallet_group":WalletGroup.AVAILABLE},
+    {"name":"Unassigned", "type":WalletType.CASH, "currency":"INR", "balance":0, "wallet_group":WalletGroup.UNASSIGNED},
+    {"name":"Savings", "type":WalletType.BANK, "currency":"INR", "balance":0, "wallet_group": WalletGroup.SAVINGS},
+    {"name":"Emergency Fund", "type":WalletType.BANK, "currency":"INR", "balance":0, "wallet_group":WalletGroup.EMERGENCY_FUND},
+    {"name":"Investments", "type":WalletType.BROKERAGE, "currency":"INR", "balance":0, "wallet_group":WalletGroup.INVESTMENT},
+    {"name":"Credit Card", "type":WalletType.CREDIT_CARD, "currency":"INR", "balance":0, "wallet_group":WalletGroup.DEBT},
+]

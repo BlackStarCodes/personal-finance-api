@@ -6,6 +6,8 @@ from ..security import pwd_hashed, get_current_user, verify_pwd, current_user
 from sqlalchemy import select, func
 from datetime import datetime, timezone
 from ..services.category_service import seed_default_categories
+from ..services.wallet_service import seed_default_wallets
+
 
 router = APIRouter()
 
@@ -34,6 +36,8 @@ async def create_user(user:UserRegister, session: session_dependency):
         session.refresh(new_user)
 
         seed_default_categories(new_user.id, session)
+        seed_default_wallets(new_user.id, session)
+        
         session.commit()
     except Exception:
         session.rollback()
