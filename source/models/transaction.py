@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, func, DateTime, ForeignKey, UniqueConstraint, Boolean, Numeric, Enum
-from ..database import Base
-from ..enums import TransactionMedium, TransactionStatus
+from source.database import Base
+from source.enums import TransactionMedium, TransactionStatus
 from datetime import datetime
 from decimal import Decimal
 

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, func, DateTime, ForeignKey, UniqueConstraint, Boolean, Enum, text
-from ..database import Base
-from ..enums import CategoryType
+from source.database import Base
+from source.enums import CategoryType
 from datetime import datetime
 
 

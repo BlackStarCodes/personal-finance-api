@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session
-from .config import URL
+from source.config import URL
 
 
 class Base(DeclarativeBase):

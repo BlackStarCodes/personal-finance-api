@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from .enums import WalletType, CategoryType, TransactionMedium, TransactionStatus, WalletGroup
+from source.enums import WalletType, CategoryType, TransactionMedium, TransactionStatus, WalletGroup
 from decimal import Decimal
 from datetime import datetime
 

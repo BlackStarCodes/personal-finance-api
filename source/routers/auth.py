@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
-from ..config import TOKEN_EXPIRE_MINS
-from ..security import create_access_token, authenticate_user
+from source.config import TOKEN_EXPIRE_MINS
+from source.security import create_access_token, authenticate_user
 from datetime import timedelta
 from typing import Annotated
-from ..schemas import Token
-from ..dependencies import session_dependency
+from source.schemas import Token
+from source.dependencies import session_dependency
 
 
 router = APIRouter()

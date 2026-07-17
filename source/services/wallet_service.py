@@ -1,5 +1,5 @@
-from ..seed_data import DEFAULT_WALLETS
-from ..models.wallet import WalletOrm
+from source.seed_data import DEFAULT_WALLETS
+from source.models.wallet import WalletOrm
 
 
 

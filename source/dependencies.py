@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from .database import get_session
+from source.database import get_session
 
 
 session_dependency = Annotated[Session, Depends(get_session)]

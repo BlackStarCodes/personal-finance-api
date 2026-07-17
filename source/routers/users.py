@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends
-from ..schemas import UserRegister, UserOut, UserUpdate, UserDelete
-from ..models.user import UserOrm
-from ..dependencies import session_dependency
-from ..security import pwd_hashed, get_current_user, verify_pwd, current_user
+from source.schemas import UserRegister, UserOut, UserUpdate, UserDelete
+from source.models.user import UserOrm
+from source.dependencies import session_dependency
+from source.security import pwd_hashed, get_current_user, verify_pwd, current_user
 from sqlalchemy import select, func
 from datetime import datetime, timezone
-from ..services.category_service import seed_default_categories
-from ..services.wallet_service import seed_default_wallets
+from source.services.category_service import seed_default_categories
+from source.services.wallet_service import seed_default_wallets
 
 
 router = APIRouter()

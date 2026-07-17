@@ -1,4 +1,4 @@
-from .enums import CategoryType, WalletGroup, WalletType
+from source.enums import CategoryType, WalletGroup, WalletType
 
 
 """

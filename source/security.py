@@ -1,14 +1,14 @@
 import jwt
 from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
-from .dependencies import session_dependency, oauth2_scheme
-from .models.user import UserOrm
+from source.dependencies import session_dependency, oauth2_scheme
+from source.models.user import UserOrm
 from sqlalchemy import select
 from datetime import datetime, timedelta, timezone
-from .config import SECRET_KEY, ALGO
+from source.config import SECRET_KEY, ALGO
 from typing import Annotated
 from fastapi import HTTPException, status, Depends
-from .schemas import TokenData
+from source.schemas import TokenData
 
 
 hasher = PasswordHash.recommended()

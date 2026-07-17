@@ -1,8 +1,8 @@
-from ..models.wallet import WalletOrm
-from ..models.category import CategoryOrm
-from ..models.transaction import TransactionOrm
+from source.models.wallet import WalletOrm
+from source.models.category import CategoryOrm
+from source.models.transaction import TransactionOrm
 from fastapi import HTTPException
-from ..enums import CategoryType, WalletGroup
+from source.enums import CategoryType, WalletGroup
 from sqlalchemy import select, or_
 
 
@@ -43,27 +43,24 @@ def validate_category(user_id, category_id, session):
 # ============================
 
 
-def validate_transaction_rules(category: CategoryType, from_wallet: WalletOrm | None, to_wallet: WalletOrm):
-    if category == CategoryType.INCOME:
-        validate_income(from_wallet, to_wallet)
+def validate_transaction_rules(category: CategoryType, from_wallet: WalletOrm | None, to_wallet: WalletOrm | None):
+    
+    validators = {
+        CategoryType.INCOME: validate_income,
+        CategoryType.EXPENSE: validate_expense,
+        CategoryType.SAVINGS: validate_savings,
+        CategoryType.EMERGENCY_FUND: validate_emergency_fund,
+        CategoryType.INVESTMENT: validate_investment,
+        CategoryType.DEBT: validate_debt,
+        CategoryType.TRANSFER: validate_transfer,
+    }
 
-    elif category == CategoryType.EXPENSE:
-        validate_expense(from_wallet, to_wallet)
+    validator = validators.get(category.type)
 
-    elif category == CategoryType.SAVINGS:
-        validate_savings(from_wallet, to_wallet)
+    if validator is None:
+        raise HTTPException(400, "Category type not found!")
 
-    elif category == CategoryType.EMERGENCY_FUND:
-        validate_emergency_fund(from_wallet, to_wallet)
-
-    elif category == CategoryType.INVESTMENT:
-        validate_investment(from_wallet, to_wallet)
-
-    elif category == CategoryType.DEBT:
-        validate_debt(from_wallet, to_wallet)
-
-    else:
-        validate_transfer(from_wallet, to_wallet)
+    validator(from_wallet, to_wallet)
 
 
 

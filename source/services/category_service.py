@@ -1,5 +1,5 @@
-from ..seed_data import DEFAULT_CATEGORIES
-from ..models.category import CategoryOrm
+from source.seed_data import DEFAULT_CATEGORIES
+from source.models.category import CategoryOrm
 
 
 def seed_default_categories(user_id: int, session):

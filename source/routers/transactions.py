@@ -1,11 +1,11 @@
 from fastapi import APIRouter
-from ..models.transaction import TransactionOrm
-from ..models.wallet import WalletOrm
-from ..dependencies import session_dependency
+from source.models.transaction import TransactionOrm
+from source.models.wallet import WalletOrm
+from source.dependencies import session_dependency
 from sqlalchemy import select, or_
-from ..schemas import TransactionCreate, TransactionOut, TransactionUpdate
-from ..security import current_user
-from ..services.transaction_service import validate_wallets, validate_category, validate_transaction_rules,check_sufficient_balance, apply_balance_changes, reverse_balance_changes, get_user_transaction
+from source.schemas import TransactionCreate, TransactionOut, TransactionUpdate
+from source.security import current_user
+from source.services.transaction_service import validate_wallets, validate_category, validate_transaction_rules,check_sufficient_balance, apply_balance_changes, reverse_balance_changes, get_user_transaction
 
 
 router = APIRouter()
@@ -20,6 +20,7 @@ async def create_transaction(
     try: 
         to_wallet, from_wallet = validate_wallets(user_id=user.id, to_wallet_id=transaction.to_wallet_id, from_wallet_id=transaction.from_wallet_id, session=session)
         category = validate_category(user.id, transaction.category_id, session)
+        
         validate_transaction_rules(from_wallet=from_wallet, to_wallet=to_wallet, category=category)
         check_sufficient_balance(transaction.amount, from_wallet, category)
         apply_balance_changes(transaction.amount, from_wallet, to_wallet, category)

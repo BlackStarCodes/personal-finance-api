@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, func, DateTime, ForeignKey, UniqueConstraint, Enum, Numeric, text, Boolean
-from ..database import Base
+from source.database import Base
 from datetime import datetime
-from ..enums import WalletType, WalletGroup
+from source.enums import WalletType, WalletGroup
 from decimal import Decimal
 
 
