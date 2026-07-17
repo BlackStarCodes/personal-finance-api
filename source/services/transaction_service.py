@@ -69,7 +69,7 @@ def validate_income(from_wallet: WalletOrm | None, to_wallet: WalletOrm):
         raise HTTPException(400, "Income transaction needs a destination wallet!")
     
     if from_wallet:
-        raise HTTPException(400, "Income transaction cannot have source wallet!")
+        raise HTTPException(400, "Income transaction cannot have a source wallet!")
 
     if to_wallet.wallet_group not in {WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED}:
         raise HTTPException(status_code=400, detail="Income transaction can only go to Available or Unassigned Wallets!")
@@ -81,7 +81,7 @@ def validate_expense(from_wallet: WalletOrm | None, to_wallet: WalletOrm | None)
         raise HTTPException(400, "Expense transaction needs a source wallet!")
     
     if to_wallet:
-        raise HTTPException(400, "Expense transaction cannot have destination wallet!")
+        raise HTTPException(400, "Expense transaction cannot have a destination wallet!")
 
     if from_wallet.wallet_group not in {WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED, WalletGroup.DEBT}:
         raise HTTPException(status_code=400, detail="Can only spend from available, unassigned, debt wallets!")
