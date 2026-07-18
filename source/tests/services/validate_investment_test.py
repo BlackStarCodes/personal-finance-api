@@ -35,10 +35,10 @@ VALID_PAIRS = [
 
 def test_investment_accepts_valid_wallet_groups(from_wallet_group, to_wallet_group, wallet_factory):
      
-     from_wallet = wallet_factory(from_wallet_group)
-     to_wallet = wallet_factory(to_wallet_group)
+    from_wallet = wallet_factory(from_wallet_group)
+    to_wallet = wallet_factory(to_wallet_group)
 
-     ts.validate_investment(from_wallet, to_wallet)
+    ts.validate_investment(from_wallet, to_wallet)
 
 
 

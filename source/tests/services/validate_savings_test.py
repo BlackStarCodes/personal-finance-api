@@ -34,10 +34,10 @@ VALID_PAIRS = [
 
 def test_savings_accepts_valid_wallet_groups(from_wallet_group, to_wallet_group, wallet_factory):
      
-     from_wallet = wallet_factory(from_wallet_group)
-     to_wallet = wallet_factory(to_wallet_group)
+    from_wallet = wallet_factory(from_wallet_group)
+    to_wallet = wallet_factory(to_wallet_group)
 
-     ts.validate_savings(from_wallet, to_wallet)
+    ts.validate_savings(from_wallet, to_wallet)
 
 
 

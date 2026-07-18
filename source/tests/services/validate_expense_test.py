@@ -34,9 +34,9 @@ VALID_WALLET_GROUPS = [
 @pytest.mark.parametrize("from_wallet_group", VALID_WALLET_GROUPS)
 def test_expense_accepts_valid_wallet_groups(from_wallet_group, wallet_factory):
      
-     from_wallet = wallet_factory(from_wallet_group)
+    from_wallet = wallet_factory(from_wallet_group)
 
-     ts.validate_expense(from_wallet, to_wallet=None)
+    ts.validate_expense(from_wallet, to_wallet=None)
 
 
 

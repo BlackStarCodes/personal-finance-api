@@ -48,10 +48,10 @@ VALID_PAIRS = [
 
 def test_debt_accepts_valid_wallet_groups(from_wallet_group, to_wallet_group, wallet_factory):
      
-     from_wallet = wallet_factory(from_wallet_group)
-     to_wallet = wallet_factory(to_wallet_group)
+    from_wallet = wallet_factory(from_wallet_group)
+    to_wallet = wallet_factory(to_wallet_group)
 
-     ts.validate_debt(from_wallet, to_wallet)
+    ts.validate_debt(from_wallet, to_wallet)
 
 
 

@@ -165,17 +165,23 @@ def validate_investment(from_wallet, to_wallet):
 
 
 def validate_transfer(from_wallet: WalletOrm | None, to_wallet: WalletOrm | None):
+    if from_wallet is None:
+        raise HTTPException(400, "Transfer transaction needs a source wallet!")
     
-    if from_wallet.wallet_group in {WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED} and to_wallet.wallet_group in {WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED}:
-        pass
+    if to_wallet is None:
+        raise HTTPException(400, "Transfer transaction needs a destination wallet!")
 
-    elif from_wallet.wallet_group == WalletGroup.EMERGENCY_FUND and to_wallet.wallet_group == WalletGroup.EMERGENCY_FUND:
-        pass 
-    
-    elif from_wallet.wallet_group == WalletGroup.SAVINGS and to_wallet.wallet_group == WalletGroup.SAVINGS:
-        pass
 
-    else:
+    valid_pairs = {
+        (WalletGroup.AVAILABLE, WalletGroup.AVAILABLE),
+        (WalletGroup.UNASSIGNED, WalletGroup.UNASSIGNED),
+        (WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED),
+        (WalletGroup.UNASSIGNED, WalletGroup.AVAILABLE),
+        (WalletGroup.EMERGENCY_FUND, WalletGroup.EMERGENCY_FUND),
+        (WalletGroup.SAVINGS, WalletGroup.SAVINGS),
+    }
+
+    if (from_wallet.wallet_group, to_wallet.wallet_group) not in valid_pairs:
         raise HTTPException(400, "Invalid Transfer Transaction!")
 
 
