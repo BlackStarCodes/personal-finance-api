@@ -4,6 +4,24 @@ import source.services.transaction_service as ts
 from source.enums import WalletGroup
 
 
+def test_savings_requires_source_wallet(wallet_factory):
+    savings_wallet = wallet_factory(WalletGroup.SAVINGS)
+    with pytest.raises(HTTPException) as exc:
+        ts.validate_savings(from_wallet=None, to_wallet=savings_wallet)
+
+    assert exc.value.status_code == 400
+    assert exc.value.detail == "Savings transaction needs a source wallet!"
+
+
+def test_savings_requires_destination_wallet(wallet_factory):
+    savings_wallet = wallet_factory(WalletGroup.SAVINGS)
+    with pytest.raises(HTTPException) as exc:
+        ts.validate_savings(from_wallet=savings_wallet, to_wallet=None)
+
+    assert exc.value.status_code == 400
+    assert exc.value.detail == "Savings transaction needs a destination wallet!"
+
+
 VALID_PAIRS = [
         (WalletGroup.AVAILABLE, WalletGroup.SAVINGS),
         (WalletGroup.UNASSIGNED, WalletGroup.SAVINGS),
