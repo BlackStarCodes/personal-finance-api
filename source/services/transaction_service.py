@@ -88,63 +88,79 @@ def validate_expense(from_wallet: WalletOrm | None, to_wallet: WalletOrm | None)
     
 
 
-def validate_savings(from_wallet: WalletOrm | None, to_wallet: WalletOrm | None):
+def validate_savings(from_wallet, to_wallet):
     if from_wallet is None:
         raise HTTPException(400, "Savings transaction needs a source wallet!")
-    
+
     if to_wallet is None:
         raise HTTPException(400, "Savings transaction needs a destination wallet!")
-    
-    if from_wallet.wallet_group == WalletGroup.DEBT or to_wallet.wallet_group == WalletGroup.DEBT:
-        raise HTTPException(400, "This is Debt transaction not a Savings transaction")
 
-    if from_wallet.wallet_group == WalletGroup.SAVINGS and to_wallet.wallet_group == WalletGroup.SAVINGS:
-        raise HTTPException(status_code=400, detail="Savings to Savings is a Transfer transaction!")
-    
-    if to_wallet.wallet_group not in {WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED, WalletGroup.SAVINGS} and from_wallet.wallet_group != WalletGroup.SAVINGS:
-        raise HTTPException(status_code=400, detail="Invalid Savings transaction!")
+    valid_pairs = {
+        (WalletGroup.AVAILABLE, WalletGroup.SAVINGS),
+        (WalletGroup.UNASSIGNED, WalletGroup.SAVINGS),
+        (WalletGroup.SAVINGS, WalletGroup.AVAILABLE),
+        (WalletGroup.SAVINGS, WalletGroup.UNASSIGNED),
+        (WalletGroup.INVESTMENT, WalletGroup.SAVINGS),
+        (WalletGroup.EMERGENCY_FUND, WalletGroup.SAVINGS),
+    }
 
-    if from_wallet.wallet_group in {WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED} and to_wallet.wallet_group != WalletGroup.SAVINGS:
-        raise HTTPException(status_code=400, detail="Invalid Savings transaction!")
+    if (from_wallet.wallet_group, to_wallet.wallet_group) not in valid_pairs:
+        raise HTTPException(400, "Invalid Savings transaction!")
 
 
 
-def validate_emergency_fund(from_wallet: WalletOrm | None, to_wallet: WalletOrm | None):
+def validate_emergency_fund(from_wallet, to_wallet):
     if from_wallet is None:
-        raise HTTPException(400, "Emergency Fund transaction needs a source wallet!")
-    
+        raise HTTPException(
+            400,
+            "Emergency Fund transaction needs a source wallet!"
+        )
+
     if to_wallet is None:
-        raise HTTPException(400, "Emergency Fund transaction needs a destination wallet!")
+        raise HTTPException(
+            400,
+            "Emergency Fund transaction needs a destination wallet!"
+        )
 
-    if from_wallet.wallet_group == WalletGroup.DEBT or to_wallet.wallet_group == WalletGroup.DEBT:
-        raise HTTPException(400, "This is Debt transaction not an Emergency Fund transaction")
-   
-    if from_wallet.wallet_group == WalletGroup.EMERGENCY_FUND and to_wallet.wallet_group == WalletGroup.EMERGENCY_FUND:
-        raise HTTPException(status_code=400, detail="Emergency Fund to Emergency Fund is a Transfer transaction!")
-    
-    if to_wallet.wallet_group not in {WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED, WalletGroup.EMERGENCY_FUND} and from_wallet.wallet_group != WalletGroup.EMERGENCY_FUND:
-        raise HTTPException(status_code=400, detail="Invalid Emergency Fund Transaction!") 
+    valid_pairs = {
+        (WalletGroup.AVAILABLE, WalletGroup.EMERGENCY_FUND),
+        (WalletGroup.UNASSIGNED, WalletGroup.EMERGENCY_FUND),
+        (WalletGroup.EMERGENCY_FUND, WalletGroup.AVAILABLE),
+        (WalletGroup.EMERGENCY_FUND, WalletGroup.UNASSIGNED),
+        (WalletGroup.INVESTMENT, WalletGroup.EMERGENCY_FUND),
+        (WalletGroup.SAVINGS, WalletGroup.EMERGENCY_FUND),
+    }
 
-    if from_wallet.wallet_group in {WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED} and to_wallet.wallet_group != WalletGroup.EMERGENCY_FUND:
-        raise HTTPException(status_code=400, detail="Invalid Emergency Fund transaction!")
+    if (from_wallet.wallet_group, to_wallet.wallet_group) not in valid_pairs:
+        raise HTTPException(400, "Invalid Emergency Fund transaction!")
 
 
 
-def validate_investment(from_wallet: WalletOrm | None, to_wallet: WalletOrm | None):
+def validate_investment(from_wallet, to_wallet):
     if from_wallet is None:
-        raise HTTPException(400, "Investment transaction needs a source wallet!")
-    
+        raise HTTPException(
+            400,
+            "Investment transaction needs a source wallet!"
+        )
+
     if to_wallet is None:
-        raise HTTPException(400, "Investment transaction needs a destination wallet!")
+        raise HTTPException(
+            400,
+            "Investment transaction needs a destination wallet!"
+        )
 
-    if from_wallet.wallet_group == WalletGroup.DEBT or to_wallet.wallet_group == WalletGroup.DEBT:
-        raise HTTPException(400, "This is Debt transaction not an Investment transaction")
+    valid_pairs = {
+        (WalletGroup.AVAILABLE, WalletGroup.INVESTMENT),
+        (WalletGroup.UNASSIGNED, WalletGroup.INVESTMENT),
+        (WalletGroup.INVESTMENT, WalletGroup.AVAILABLE),
+        (WalletGroup.INVESTMENT, WalletGroup.UNASSIGNED),
+        (WalletGroup.INVESTMENT, WalletGroup.INVESTMENT),
+        (WalletGroup.EMERGENCY_FUND, WalletGroup.INVESTMENT),
+        (WalletGroup.SAVINGS, WalletGroup.INVESTMENT),
+    }
 
-    if to_wallet.wallet_group not in {WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED, WalletGroup.INVESTMENT} and from_wallet.wallet_group != WalletGroup.INVESTMENT:
-        raise HTTPException(status_code=400, detail="Invalid Investment Transaction!") 
-
-    if from_wallet.wallet_group in {WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED} and to_wallet.wallet_group != WalletGroup.INVESTMENT:
-        raise HTTPException(status_code=400, detail="Invalid Investment transaction!")
+    if (from_wallet.wallet_group, to_wallet.wallet_group) not in valid_pairs:
+        raise HTTPException(400, "Invalid Investment transaction!")
 
 
 
