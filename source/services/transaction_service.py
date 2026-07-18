@@ -43,7 +43,7 @@ def validate_category(user_id, category_id, session):
 # ============================
 
 
-def validate_transaction_rules(category: CategoryType, from_wallet: WalletOrm | None, to_wallet: WalletOrm | None):
+def validate_transaction_rules(category: CategoryOrm, from_wallet: WalletOrm | None, to_wallet: WalletOrm | None):
     
     validators = {
         CategoryType.INCOME: validate_income,
@@ -209,6 +209,8 @@ def check_sufficient_balance(amount, from_wallet: WalletOrm | None, category):
     if amount <= 0:
         raise HTTPException(status_code=400, detail="Amount must be above 0!")
 
+    if category.type == CategoryType.INCOME and from_wallet is None:
+        return True
     
     if category.type != CategoryType.INCOME and from_wallet.wallet_group != WalletGroup.DEBT:
         if from_wallet.balance < amount:
