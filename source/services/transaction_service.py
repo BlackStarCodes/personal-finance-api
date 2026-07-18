@@ -184,11 +184,14 @@ def validate_debt(from_wallet: WalletOrm | None, to_wallet:  WalletOrm | None):
     if from_wallet is None:
         raise HTTPException(400, "Debt transaction needs a source wallet!")
     
-    if to_wallet is None:
-        raise HTTPException(400, "Debt transaction needs a destination wallet!")
+    
+    # Debt → None is allowed because it represents debt spending
+    if from_wallet.wallet_group != WalletGroup.DEBT and to_wallet is None:
+        raise HTTPException(400, "Debt transaction needs a destination wallet")
 
-    if to_wallet.wallet_group not in {WalletGroup.DEBT} and from_wallet.wallet_group not in {WalletGroup.DEBT}:
+    if from_wallet.wallet_group not in {WalletGroup.DEBT} and to_wallet.wallet_group not in {WalletGroup.DEBT} :
         raise HTTPException(status_code=400, detail="Invalid Debt Transaction!")
+
 
 
 # ============================
