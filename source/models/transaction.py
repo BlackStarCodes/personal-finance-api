@@ -13,7 +13,7 @@ class TransactionOrm(Base):
     name: Mapped[str] = mapped_column(String(100))
     to_wallet_id: Mapped[int | None] = mapped_column(ForeignKey('wallets.id'))
     from_wallet_id: Mapped[int | None] = mapped_column(ForeignKey('wallets.id'))
-    category_id: Mapped[int | None] = mapped_column(ForeignKey('categories.id'))
+    category_id: Mapped[int] = mapped_column(ForeignKey('categories.id'), nullable=False)
 
     amount: Mapped[Decimal] = mapped_column(Numeric(12,2))
     transaction_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
