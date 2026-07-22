@@ -1,18 +1,17 @@
 import pytest
-from fastapi import HTTPException
 import source.services.transaction_service as ts
 from source.enums import WalletGroup, CategoryType
 
 
 TWO_WALLET_CASE = [
-    (1000, WalletGroup.INVESTMENT, WalletGroup.INVESTMENT, CategoryType.TRANSFER, 0, 2000),
-    (100, WalletGroup.INVESTMENT, WalletGroup.SAVINGS, CategoryType.SAVINGS, 900, 1100),
-    (2533, WalletGroup.DEBT, WalletGroup.SAVINGS, CategoryType.DEBT, -1533, 3533),
-    (734, WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED, CategoryType.TRANSFER, 266, 1734),
-    (687, WalletGroup.AVAILABLE, WalletGroup.EMERGENCY_FUND, CategoryType.EMERGENCY_FUND, 313, 1687),
-    (45, WalletGroup.DEBT, WalletGroup.AVAILABLE, CategoryType.DEBT, 955, 1045),
-    (165, WalletGroup.UNASSIGNED, WalletGroup.INVESTMENT, CategoryType.INVESTMENT, 835, 1165),
-    (899, WalletGroup.SAVINGS, WalletGroup.EMERGENCY_FUND, CategoryType.EMERGENCY_FUND, 101, 1899),
+    (1000, WalletGroup.INVESTMENT, WalletGroup.INVESTMENT, CategoryType.TRANSFER, 2000, 0),
+    (100, WalletGroup.INVESTMENT, WalletGroup.SAVINGS, CategoryType.SAVINGS, 1100, 900),
+    (2533, WalletGroup.DEBT, WalletGroup.SAVINGS, CategoryType.DEBT, 3533, -1533),
+    (734, WalletGroup.AVAILABLE, WalletGroup.UNASSIGNED, CategoryType.TRANSFER, 1734, 266),
+    (687, WalletGroup.AVAILABLE, WalletGroup.EMERGENCY_FUND, CategoryType.EMERGENCY_FUND, 1687, 313),
+    (45, WalletGroup.DEBT, WalletGroup.AVAILABLE, CategoryType.DEBT, 1045, 955),
+    (165, WalletGroup.UNASSIGNED, WalletGroup.INVESTMENT, CategoryType.INVESTMENT, 1165, 835),
+    (899, WalletGroup.SAVINGS, WalletGroup.EMERGENCY_FUND, CategoryType.EMERGENCY_FUND, 1899, 101),
 ]
 
 @pytest.mark.parametrize("amt, from_wallet_grp, to_wallet_grp, category_type, from_bal, to_bal", TWO_WALLET_CASE)

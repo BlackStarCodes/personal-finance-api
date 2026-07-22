@@ -1,5 +1,4 @@
 import pytest
-from fastapi import HTTPException
 import source.services.transaction_service as ts
 from source.enums import WalletGroup, CategoryType
 
