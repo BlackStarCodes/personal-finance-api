@@ -62,7 +62,8 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: ses
         if not user_id:
             raise credentials_exception
         token_data = TokenData(id= user_id)
-    except InvalidTokenError:
+
+    except (InvalidTokenError, ValueError, TypeError):
         raise credentials_exception
     user = session.scalar(select(UserOrm).where(UserOrm.id == token_data.id, UserOrm.deleted_at.is_(None)))
     if not user:

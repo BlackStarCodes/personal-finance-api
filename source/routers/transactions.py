@@ -26,7 +26,7 @@ async def create_transaction(
         apply_balance_changes(transaction.amount, from_wallet, to_wallet, category)
         
         new_transaction = TransactionOrm(
-            name = transaction.name.strip() if transaction.description else None,
+            name = transaction.name.strip() if transaction.name else None,
             from_wallet_id= transaction.from_wallet_id,
             to_wallet_id= transaction.to_wallet_id,
             category_id= transaction.category_id,
@@ -34,12 +34,12 @@ async def create_transaction(
             amount= transaction.amount,
             transaction_date = transaction.transaction_date,
             description = transaction.description.strip() if transaction.description else None,
-            merchant = transaction.merchant.strip() if transaction.description else None,
+            merchant = transaction.merchant.strip() if transaction.merchant else None,
 
             transaction_medium = transaction.transaction_medium,
             status = transaction.status,
             is_recurring = transaction.is_recurring,
-            receipt_url = transaction.receipt_url.strip() if transaction.description else None,)
+            receipt_url = transaction.receipt_url.strip() if transaction.receipt_url else None,)
         
     
         session.add(new_transaction)
@@ -98,7 +98,7 @@ async def update_transaction(
         check_sufficient_balance(transaction.amount, from_wallet, category)
         apply_balance_changes(transaction.amount, from_wallet, to_wallet, category)
 
-        db_transaction.name = transaction.name.strip() if transaction.description else None
+        db_transaction.name = transaction.name.strip() if transaction.name else None
         db_transaction.from_wallet_id= transaction.from_wallet_id
         db_transaction.to_wallet_id= transaction.to_wallet_id
         db_transaction.category_id= transaction.category_id
@@ -106,12 +106,12 @@ async def update_transaction(
         db_transaction.amount= transaction.amount
         db_transaction.transaction_date = transaction.transaction_date
         db_transaction.description = transaction.description.strip() if transaction.description else None
-        db_transaction.merchant = transaction.merchant.strip() if transaction.description else None
+        db_transaction.merchant = transaction.merchant.strip() if transaction.merchant else None
 
         db_transaction.transaction_medium = transaction.transaction_medium
         db_transaction.status = transaction.status
         db_transaction.is_recurring = transaction.is_recurring
-        db_transaction.receipt_url = transaction.receipt_url.strip() if transaction.description else None
+        db_transaction.receipt_url = transaction.receipt_url.strip() if transaction.receipt_url else None
             
 
         session.commit()
